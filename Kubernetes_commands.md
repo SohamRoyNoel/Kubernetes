@@ -8,3 +8,4 @@
 - get logs: ```kubectl logs puto-pod```
 - get more pods info: ```kubectl get pods -owide```
 - yaml of pods: ```kubectl get pods -oyaml```
+- do a rolling update: ```kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1```

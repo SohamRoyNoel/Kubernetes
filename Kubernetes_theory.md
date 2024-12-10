@@ -130,3 +130,75 @@ ninja@Sohams-MacBook-Air ~ % kubectl create deployment nginx --image=nginx --dry
 - Runs sequentially
 - Must complete successfully for pod to proceed to main containers
 
+## pause container:
+- holds the network namespace for the pod.
+
+## Kubernetes User Namespace:
+- Adds Security
+- isolates uuid and gids of containers from host
+
+## PDB: Pod disruption Budget
+- Allows minium number of pods can go down in a given time
+- Uses to ensure high availability 
+- least number of replicas als running
+- uses pods eviction api to handle this
+- create a Deploy
+    ```
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+    name: nginx-deployment
+    labels:
+        app: nginx
+    spec:
+    replicas: 3           ## number of replicas to be created
+    selector:
+        matchLabels:
+        app: nginx        ## **** this is how we say if app:nginx the add below pdb
+    template:
+        metadata:
+        labels:
+            app: nginx
+        spec:
+        containers:
+        - name: nginx
+            image: nginx:1.14.2
+            ports:
+            - containerPort: 80
+    ```
+- PDB Example
+    ```
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+    name: nginx-pdb
+    spec:
+    minAvailable: 2         ## [minAvailable] or [maxUnAvailable]
+    selector:
+        matchLabels:
+        app: nginx          ## **** here app: nginx so this PDB will be added to above deployment
+    ```
+- Response
+```
+ninja@Sohams-MacBook-Air ~ % kubectl get pdb
+NAME        MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+nginx-pdb   2               N/A               1                     75s
+```
+- If you do a rolling update like below
+    ```kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1```
+  pdb will make sure one time only one can go down as [minAvailable: 2], so 2 will be als available
+- to check: ```kubectl get pods -w```
+
+
+## Request limit
+- number of allowed CPU and Memory
+- once some node is asking for more CPU, kubernetes uses Linux CFS (Completely Fair Scheduler) from same node.
+- This is called CPU throttling
+
+## Quality of services
+- Guaranteed: CPU & Memory [request === limit]
+- Burstable: if any of request or limit is not present
+- Best Effort: nothing present
+
+## Role of QoS while Pod Eviction
+- Best Effort < Burstable < Guaranteed
