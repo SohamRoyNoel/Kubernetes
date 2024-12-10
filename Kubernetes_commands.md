@@ -1,0 +1,10 @@
+- Run Kubernetes in local: ```kubectl```
+- get virtual machines: ```kubectl get nodes```
+- create a pod: ```kubectl run nginx --image=nginx```
+- get pods: ```kubectl get pods```
+- create namespace: ```kubectl create ns puto```
+- create pod: ```kubectl run puto-pod --image nginx```
+- get pods description: ```kubectl describe pods```
+- get logs: ```kubectl logs puto-pod```
+- get more pods info: ```kubectl get pods -owide```
+- yaml of pods: ```kubectl get pods -oyaml```
